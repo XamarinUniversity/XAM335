@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             xmlns:local="clr-namespace:XFDraw"
+             x:Class="XFDraw.MainPage"
+             Title="XFDraw">
+  <Grid x:Name="mainLayout" Padding="0">
+    <local:SketchView x:Name="sketchView" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" InkColor="Green" />
+    <local:HyperlinkLabel Text="university.xamarin.com" HorizontalOptions="Center" VerticalOptions="End" Margin="0,0,0,10" />
+  </Grid>
+
+</ContentPage>
