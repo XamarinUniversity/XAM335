@@ -74,9 +74,8 @@ namespace XFDraw.Droid
 						coords[id].X = x;
 						coords[id].Y = y;
 
-                        if (LineDrawn != null)
-                            LineDrawn(this, EventArgs.Empty);
-                    }
+                        LineDrawn?.Invoke(this, EventArgs.Empty);
+					}
 
 					Invalidate();
 

@@ -19,7 +19,7 @@ namespace XFDraw.Droid
 
 		public PaintView(Context context): base(context, null, 0)
         {
-            paint = new Paint() { Color = Color.Green, StrokeWidth = 5f, AntiAlias = true };
+            paint = new Paint() { Color = Color.Blue, StrokeWidth = 5f, AntiAlias = true };
             paint.SetStyle(Paint.Style.Stroke);
         }
 		public PaintView(Context context, IAttributeSet attrs) : base(context, attrs) { }
