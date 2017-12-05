@@ -2,6 +2,7 @@
 using Xamarin.Forms;
 
 #if __ANDROID__
+using XFDraw.Droid;
 using Xamarin.Forms.Platform.Android;
 using Android.Support.Design.Widget;
 using Android.Widget;
@@ -42,7 +43,7 @@ namespace XFDraw
             ToolbarItems.Add(trash);
 
 #if __ANDROID__
-            var actionButton = new FloatingActionButton(Android.App.Application.Context);
+            var actionButton = new FloatingActionButton(MainActivity.Activity);
 
             actionButton.SetImageResource(XFDraw.Droid.Resource.Drawable.pencil);
             actionButton.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(Color.Green.ToAndroid());
@@ -53,7 +54,7 @@ namespace XFDraw
             	actionButton.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(sketchView.InkColor.ToAndroid());
             };
 
-            var actionButtonFrame = new FrameLayout(Android.App.Application.Context);
+            var actionButtonFrame = new FrameLayout(MainActivity.Activity);
             actionButtonFrame.SetClipToPadding(false);
             actionButtonFrame.SetPadding(0, 0, 50, 50);
             actionButtonFrame.AddView(actionButton);
