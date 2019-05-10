@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+    <title>Exercise 1: Add a native control to a Xamarin.Forms layout</title>
+    <link rel="stylesheet" type="text/css" href="./res/styles/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./res/styles/prettify.css" />
+    <link rel="stylesheet" type="text/css" href="./res/styles/styles.css">
+</head>
+
+<body>
+    <!-- Use the same title as the StartHere -->
+    <header>XAM335 Mobile application architecture</header>
+
+    <section id="main">
+        <h2>Exercise 1: Add a native control to a Xamarin.Forms layout</h2>
+<p>The primary goal of this lab is to embed a native control into Xamarin.Forms layout. Specifically, you'll add an Android Floating Action Button to a Xamarin.Forms grid. You'll start with an existing Xamarin.Forms solution with a minimal interface with no behavior defined in a shared project. You're going to use this project to create a Xamarin.Forms sketch app. You'll modify the code to replace a toolbar button with a native control when running on Android.</p>
+<figure class="figure">
+<img src="./images/ex1_complete.png" alt="Screenshot of the completed exercise." class="exercise portrait bordered" title="Completed exercise" />
+<figcaption class="figure-caption">Completed exercise</figcaption>
+</figure>
+<blockquote class="info-quote">To complete the exercise, you will need <a href="https://www.visualstudio.com/" target="_blank">Visual Studio for Windows or macOS</a> with the <a href="https://visualstudio.microsoft.com/xamarin/" target="_blank">Xamarin development tools</a> installed. You will also need either an emulator/simulator or a device to run the exercise on. Please see the <a href="https://docs.microsoft.com/xamarin/cross-platform/get-started/installation/" target="_blank">setup page</a> if you need help installing the Xamarin development environment.
+</blockquote>
+
+<hr>
+<h2>Open the starter solution</h2>
+<p>Open the <strong>XFDraw</strong> starter solution from the <strong>Exercise 1</strong> &gt; <strong>Start</strong> folder in your copy of the cloned or downloaded <a href="https://github.com/XamarinUniversity/XAM335/">course materials</a> in either <strong>Visual Studio</strong> on Windows or <strong>Visual Studio for Mac</strong>. There is also a <strong>Completed</strong> folder with a solution you can use to check your work. Please make sure you have these folders before you begin.</p>
+<p>If you're using Visual Studio on Windows, you'll see all of the platform or head projects: iOS, Android and Windows. If you're using macOS, the Windows projects will be disabled (grayed out).</p>
+
+<hr>
+<h2>Create a platform specific control</h2>
+<p>In this exercise you'll embed a native control into Xamarin.Forms layout. Specifically, you'll add an Android Floating Action Button to a Xamarin.Forms grid.</p>
+<ol>
+<li>
+Open MainPage.xaml.cs in the XFDraw shared project.
+</li>
+<li>
+<p>Add the Android specific using statements for Android widgets:</p>
+<ul>
+<li><code>Android.Support.Design.Widget</code></li>
+<li><code>Android.Widget</code></li>
+</ul>
+</li>
+<li>
+Add the Xamarin.Forms Android platform using statement to gain access to the native embedding using statements: <code>Xamarin.Forms.Platform.Android</code>.
+</li>
+<li>
+Add a using statement for <code>XFDraw.Android</code> so you can access types in the Android project.
+</li>
+<li>
+<p>Surround the new using statements with an Android platform preprocessor directive to ensure they're only compiled by the Android head-project.</p>
+<pre class="prettyprint-collapse"><code>#if __ANDROID__
+using XFDraw.Droid;
+using Xamarin.Forms.Platform.Android;
+using Android.Widget;
+using Android.Support.Design.Widget;
+#endif
+</code></pre>
+
+</li>
+<li>
+In the constructor, find the code to create the &quot;New Color&quot; ToolbarItem.
+</li>
+<li>
+Add an Android preprocessor directive with a matching else statement so the &quot;New Color&quot; button is created on every platform except Android.
+</li>
+<li>
+For Android only, create a new <code>FloatingActionButton</code>. In the Android head-project, a static property named <code>Activity</code> has been added that you can pass in as the context.
+</li>
+<li>
+Set the image resource to the included pencil image. You may need to fully qualify the namespace: <code>XFDraw.Droid.Resource.Drawable.pencil</code>.
+</li>
+<li>
+Handle the button's <code>Click</code> event handler and call the provided <code>OnColorClicked</code> method.
+</li>
+<li>
+Create an Android Frame Layout to hold the button. As you create the FrameLayout, you'll want to set it's size large enough to hold the button as well as the button's drop-shadow. You have two options to choose from when setting the FrameLayout size. The first option is to call <code>SetPadding</code> with large enough values to contain the button's drop-shadow. The second option is to set the margin on the Xamarin.Forms frame which you'll create in a next step. The <code>SetPadding</code> option makes use of pixels to adjust the size where as setting a margin will make use of device independent pixels (DIPs). DIPs is the recommended implementation. The instructions below shows the <code>SetPadding</code> option, however it has been commented out. You'll rather want to fix sizing when embedding the native view in our next step.
+</li>
+<li>
+As a last step make sure to set the <code>SetClipToPadding</code> to false to ensure the drop-shadow is visible.
+</li>
+</ol>
+<pre class="prettyprint-collapse"><code>#if __ANDROID__
+   var actionButton = new FloatingActionButton(MainActivity.Activity);
+   actionButton.SetImageResource(XFDraw.Droid.Resource.Drawable.pencil);
+   actionButton.Click += (s, e) =&gt; {
+      OnColorClicked();
+   };
+
+   var actionButtonFrame = new FrameLayout(MainActivity.Activity);
+   actionButtonFrame.SetClipToPadding(false);
+   //actionButtonFrame.SetPadding(0, 0, 50, 50); - This will use pixels to set the size and not recommended.
+   actionButtonFrame.AddView(actionButton);
+#else
+   ToolbarItems.Add(new ToolbarItem(&quot;New Color&quot;, &quot;pencil.png&quot;, OnColorClicked));
+#endif
+</code></pre>
+
+
+<hr>
+<h2>Embed the native control</h2>
+<p>With your Android <code>FloatingActionButton</code> ready and wrapped in a <code>FrameLayout</code> large enough to display it entirely, you'll put it in your main Forms Grid layout.</p>
+<ol>
+<li>
+Call the <code>ToView</code> extension method on the <code>FrameLayout</code> instance and save it to a local variable.
+</li>
+<li>
+You'll place the button in the lower-right corner of the grid: set both the <code>HorizontalOptions</code> and <code>VerticalOptions</code> to <code>LayoutOptions.End</code>.
+</li>
+<li>
+Recall from earlier that you'll have to set up the View so that both the button and it's drop-shadow fits into the native layout. You want to do this by relying on the Xamarin.Forms rendering engine that will set the value using the platform specific rendering units. On Android this value will be translated into DIPs. Set the <code>Margin</code> of the View to an appropriate <code>Thinkness</code>.
+</li>
+<li>
+<p>Add the view to <strong>mainLayout</strong>'s Children collection.</p>
+<pre class="prettyprint-collapse"><code>var actionButtonFrame = new FrameLayout(MainActivity.Activity);
+...
+var actionButtonFrameView = actionButtonFrame.ToView();
+actionButtonFrameView.HorizontalOptions = LayoutOptions.End;
+actionButtonFrameView.VerticalOptions = LayoutOptions.End;
+actionButtonFrameView.Margin = new Thickness(25);
+
+mainLayout.Children.Add(actionButtonFrameView);
+</code></pre>
+
+</li>
+<li>
+Run the application on Android and one other platform.
+</li>
+</ol>
+
+<hr>
+<h2>Exercise summary</h2>
+<p>In this exercise, you created a platform-specific native control and embedded it into a Xamarin.Forms layout.</p>
+<p>You can view the completed <strong>XFDraw</strong> solution in the <strong>Exercise 1</strong> &gt; <strong>Completed</strong> folder of your copy of the cloned or downloaded <a href="https://github.com/XamarinUniversity/XAM335/">course materials</a>.</p>
+
+
+        <div class="align-right">
+            <a href="../StartHere.html">Go Back</a>
+        </div>
+
+    </section>
+
+    <script src="./res/js/jquery.min.js"></script>
+    <script src="./res/js/jquery.imagemapster.min.js"></script>
+    <script src="./res/js/imagemap.js"></script>
+    <script src="./res/js/prettify.js"></script>
+    <script src="./res/js/script.js"></script>
+
+    <footer>Copyright (C) 2018 Xamarin Inc., Microsoft. All rights reserved.<br><a target="_blank" href="http://university.xamarin.com">Visit Xamarin University for more classes and content</a></footer>
+
+</body>
+</html>
