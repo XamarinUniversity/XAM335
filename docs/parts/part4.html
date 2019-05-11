@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+    <title>Exercise 4: Create a renderer for a custom control</title>
+    <link rel="stylesheet" type="text/css" href="./res/styles/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./res/styles/prettify.css" />
+    <link rel="stylesheet" type="text/css" href="./res/styles/styles.css">
+</head>
+
+<body>
+    <!-- Use the same title as the StartHere -->
+    <header>XAM335 Mobile application architecture</header>
+
+    <section id="main">
+        <h2>Exercise 4: Create a renderer for a custom control</h2>
+<p>In this exercise, you'll create the platform-specific renderers for the custom drawing surface created in the previous exercise.</p>
+<p>The provided <strong>Assets</strong> folder contains a custom control for each platform that'll present a drawing surface, respond to pointer events and draw lines. Your job is to consume the custom control on each platform in a renderer.</p>
+<p>This exercise includes steps for all platforms supported by Xamarin.Forms. You're not required to complete the steps for every platform but it's recommend you run the exercises on at least 2.</p>
+<figure class="figure">
+<img src="./images/ex4_complete.png" alt="Screenshot of the completed exercise." class="exercise bordered" title="Completed exercise" />
+<figcaption class="figure-caption">Completed exercise</figcaption>
+</figure>
+<blockquote class="info-quote">To complete the exercise, you will need <a href="https://www.visualstudio.com/" target="_blank">Visual Studio for Windows or macOS</a> with the <a href="https://visualstudio.microsoft.com/xamarin/" target="_blank">Xamarin development tools</a> installed. You will also need either an emulator/simulator or a device to run the exercise on. Please see the <a href="https://docs.microsoft.com/xamarin/cross-platform/get-started/installation/" target="_blank">setup page</a> if you need help installing the Xamarin development environment.
+</blockquote>
+
+<hr>
+<h2>Open the starter solution</h2>
+<p>This exercise is a continuation of the previous exercise. You can use your existing solution or begin from the prior <strong>Exercise 3 &gt; Completed</strong> solution in your copy of the cloned or downloaded <a href="https://github.com/XamarinUniversity/XAM335/">course materials</a>.</p>
+<p>If you're using Visual Studio on Windows, you'll see all of the platform or head projects: iOS, Android and Windows. If you're using macOS, the Windows projects will be disabled (grayed out).</p>
+
+<hr>
+<h2>Add platform-specific custom controls</h2>
+<p>Creating a configurable drawing control on each platform requires platform-specific knowledge.</p>
+<p>For simplicity, we've included the touch and gesture enabled drawing code for iOS and Android. We've also provided similar code for the Windows platforms. The provided classes need to be added to each head-project.</p>
+<ol>
+<li>
+Add the appropriate <strong>PaintView</strong> class to each platform-specific project.
+</li>
+<li>
+<p>Optionally - inspect the code on each platform. Notice that the <strong>PaintView</strong> class shares some similarities across all platforms:</p>
+<ul>
+<li>The class name is <strong>PaintView</strong></li>
+<li>There's a public method named <strong>SetInkColor</strong></li>
+<li>There's a public method named <strong>Clear</strong></li>
+<li>There's an event named <strong>LineDrawn</strong></li>
+</ul>
+</li>
+<li>
+You'll use these when you create the renderer on each platform.
+</li>
+</ol>
+
+<hr>
+<h2>Create the renderer on each platform</h2>
+<p>You'll create the renderers to display the custom <strong>PaintView</strong> control on each platform. Because we've designed the PaintView control to expose the same public methods on each platform, the steps for creating each renderer are very similar. Keep in mind, this won't be true for all renderers.</p>
+<p>Repeat the steps below for each platform in the platform specific projects. You'll need to add the platform specific using statements as you build the renderer.</p>
+<ol>
+<li>
+Create a new class named <strong>SketchViewRenderer</strong>.
+</li>
+<li>
+Update the signature to derive from <code>ViewRenderer</code>. The first type argument is the element; use <code>SketchView</code>. The second type element is the native control; use <code>PaintView</code>.
+</li>
+<li>
+Add the <code>ExportRenderer</code> assembly attribute above the namespace declaration to connect the <code>SketchViewRenderer</code> to the <code>SketchView</code>.
+</li>
+<li>
+<strong>Android only</strong>: Create a constructor that accepts an Android <code>Context</code> and passes it to the base constructor.
+</li>
+</ol>
+<pre class="prettyprint-collapse"><code>using XFDraw;
+using Xamarin.Forms;
+using Xamarin.Forms.Platform.[platform];
+using XFDraw.[platform];
+
+[assembly: ExportRenderer(typeof(SketchView), typeof(SketchViewRenderer))]
+namespace XFDraw.[platform]
+{
+    class SketchViewRenderer : ViewRenderer&lt;SketchView, PaintView&gt;
+    {
+
+    }
+}
+</code></pre>
+
+
+<hr>
+<h2>Create and set the native control</h2>
+<ol>
+<li>
+In each renderer, override <code>OnElementChanged</code>.
+</li>
+<li>
+Create and instantiate a local <code>PaintView</code> instance named <strong>paintView</strong>. On Android you'll need to pass in the context: <code>Android.App.Application.Context</code>; on the other platforms the constructor takes no parameters.
+</li>
+<li>
+<p>Set the color on <strong>paintView</strong> using the <code>SetInkColor</code> method. You can reach the bindable <code>InkColor</code> property on <code>Element</code>. On Android and iOS, there are extension methods to convert the Xamarin.Forms color to a native color: <code>ToUIColor</code> and <code>ToAndroid</code>. On Windows you can add the method below to convert to a Xamarin.Forms <code>Color</code> to a <code>Windows.UI.Color</code>.</p>
+<pre class="prettyprint-collapse"><code>Windows.UI.Color GetWindowsColor(Color color)
+{
+    return Windows.UI.Color.FromArgb((byte)(255 * color.A), (byte)(255 * color.R), (byte)(255 * color.G), (byte)(255 * color.B));
+}
+</code></pre>
+
+</li>
+<li>
+Assign <strong>paintView</strong> as the native <code>control</code> using the <code>SetNativeControl</code> method. On Android, you'll need to pass in the <code>Context</code> that you receive in the renderer's constructor.
+</li>
+<li>
+The above code should only be performed once. Surround the code in an <code>if</code> statement that <code>only</code> executes if <code>Control</code> is <code>null</code>.
+</li>
+<li>
+<p>Run the application, you should now be able to draw by dragging your finger.</p>
+<pre class="prettyprint-collapse"><code>protected override void OnElementChanged(ElementChangedEventArgs&lt;SketchView&gt; e)
+{
+    base.OnElementChanged(e);
+
+    if (Control == null)
+    {
+        var paintView = new PaintView();
+        paintView.SetInkColor(GetWindowsColor(this.Element.InkColor));
+        SetNativeControl(paintView);
+    }
+}
+</code></pre>
+
+</li>
+</ol>
+
+<hr>
+<h2>Respond to color property changes</h2>
+<p>You want to ensure the native control is updated when properties are changed on the Xamarin.Forms element.</p>
+<ol>
+<li>
+Override <code>OnElementPropertyChanged</code>.
+</li>
+<li>
+The passed in <code>PropertyChangedEventArgs</code> has a <code>PropertyName</code> property which holds exactly what you'd expect: the name of the property on the element. Compare this to the name of your <code>InkProperty</code>. You can do this is a type-safe manner by checking the static <code>SketchView.InkColorProperty.PropertyName</code>.
+</li>
+<li>
+If the property name is correct, update the ink property on the native control using the <code>InkColor</code> property on the element.
+</li>
+</ol>
+<pre class="prettyprint-collapse"><code>protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+{
+    base.OnElementPropertyChanged(sender, e);
+
+    if (e.PropertyName == SketchView.InkColorProperty.PropertyName)
+    {
+        Control.SetInkColor(GetWindowsColor(Element.InkColor));
+    }
+}
+</code></pre>
+
+
+<hr>
+<h2>Change the color property</h2>
+<p>You'll trigger an ink color change from your UI.</p>
+<ol>
+<li>
+Open <strong>MainPage.xaml.cs</strong> in the shared project.
+</li>
+<li>
+<p>Set a new random color every time the &quot;Color changed&quot; button is pressed. The <strong>OnColorClicked</strong> method is already being called when the button is tapped, but the method body is empty. Use the provided <code>GetRandomColor</code> method to assign a new color to <strong>sketchView</strong>'s <code>InkColor</code> property.</p>
+<pre class="prettyprint-collapse"><code>void OnColorClicked ()
+{
+    sketchView.InkColor = GetRandomColor();
+}
+</code></pre>
+
+</li>
+<li>
+<p>Optional: update the background of the Android floating action button when a new color is assigned.</p>
+<pre class="prettyprint-collapse"><code>actionButton.Click += (s, e) =&gt; {
+    OnColorClicked();
+    actionButton.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(sketchView.InkColor.ToAndroid());
+};
+</code></pre>
+
+</li>
+<li>
+Run the application. On Android, press the floating action button to change colors. On the other platforms, press the toolbar button.
+</li>
+</ol>
+
+<hr>
+<h2>Exercise summary</h2>
+<p>In this exercise you created renderers that instantiate custom, platform specific controls for a custom defined Xamarin.Forms element. You also created and used a bindable property to update the renderers.</p>
+<p>You can view the completed solution in the <strong>Exercise 4</strong> &gt; <strong>Completed</strong> folder of your copy of the cloned or downloaded <a href="https://github.com/XamarinUniversity/XAM335/">course materials</a>.</p>
+
+
+        <div class="align-right">
+            <a href="../StartHere.html">Go Back</a>
+        </div>
+
+    </section>
+
+    <script src="./res/js/jquery.min.js"></script>
+    <script src="./res/js/jquery.imagemapster.min.js"></script>
+    <script src="./res/js/imagemap.js"></script>
+    <script src="./res/js/prettify.js"></script>
+    <script src="./res/js/script.js"></script>
+
+    <footer>Copyright (C) 2018 Xamarin Inc., Microsoft. All rights reserved.<br><a target="_blank" href="http://university.xamarin.com">Visit Xamarin University for more classes and content</a></footer>
+
+</body>
+</html>

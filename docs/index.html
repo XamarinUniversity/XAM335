@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+    <title>XAM335 Mobile application architecture</title>
+    <link rel="stylesheet" type="text/css" href="./parts/res/styles/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./parts/res/styles/prettify.css">
+    <link rel="stylesheet" type="text/css" href="./parts/res/styles/styles.css">
+</head>
+
+<body>
+    <!-- This will be filled in at runtime -->
+    <header role="course-title"></header>
+    <section id="main">
+        <h2>Mobile application architecture - XAM335</h2>
+<p>We're going to focus on how to properly architect your application to separate the <em>presentation</em> from the business logic and data that drives it. We'll be looking at three primary patterns which are popular in the mobile world: Model-View-Controller (MVC), Model-View-Presenter (MVP), and Model-View-ViewModel (MVVM).</p>
+<h3>Upon completion you will be able to:</h3>
+<ul>
+<li>Embed native controls into Xamarin.Forms</li>
+<li>Customize a renderer for an existing control</li>
+<li>Create a renderer for a custom control</li>
+<li>Send notifications between renderer and element</li>
+</ul>
+<h3>Course exercise download</h3>
+<p>Exercise materials are available from <a href="https://github.com/XamarinUniversity/XAM335/">GitHub</a>. The code can be cloned through a desktop Git client or <a href="https://github.com/XamarinUniversity/XAM335/archive/master.zip">downloaded directly</a> as a ZIP file.</p>
+<blockquote class="info-quote">If you are using Windows, try to select a location with a shorter path length to make sure you don't exceed the 260 character limit.
+</blockquote>
+<h2>Lecture</h2>
+<p>Here are the <a target="_blank" href="./parts/slides.pdf">lecture slides</a>.</p>
+<h2>Exercises</h2>
+<ol>
+<li>
+<a href="parts/part1.html">Exercise 1: Add a native control to a Xamarin.Forms layout</a>
+<br>
+<p>The primary goal of this lab is to embed a native control into Xamarin.Forms layout. Specifically, you'll add an Android Floating Action Button to a Xamarin.Forms grid. You'll start with an existing Xamarin.Forms solution with a minimal interface with no behavior defined in a shared project. You're going to use this project to create a Xamarin.Forms sketch app. You'll modify the code to replace a toolbar button with a native control when running on Android.</p>
+</li>
+<li>
+<a href="parts/part2.html">Exercise 2: Extend an existing renderer</a>
+<br>
+<p>In this exercise, you'll extend the provided label renderers to create a clickable &quot;hyperlink label&quot; that can launch the default browser when tapped.</p>
+</li>
+<li>
+<a href="parts/part3.html">Exercise 3: Create a custom control</a>
+<br>
+<p>In this exercise, you'll define a custom control to create a drawing surface that can be consumed in your shared code.</p>
+</li>
+<li>
+<a href="parts/part4.html">Exercise 4: Create a renderer for a custom control</a>
+<br>
+<p>In this exercise, you'll create the platform-specific renderers for the custom drawing surface created in the previous exercise.</p>
+</li>
+<li>
+<a href="parts/part5.html">Exercise 5: Send notifications to the renderer and the element</a>
+<br>
+<p>In this exercise, you'll send notifications to and from the renderer and the shared code without tightly coupling the element and the renderer.</p>
+</li>
+</ol>
+
+    </section>
+    <script src="./parts/res/js/jquery.min.js"></script>
+    <script src="./parts/res/js/prettify.js"></script>
+    <script src="./parts/res/js/script.js"></script>
+
+    <footer>Copyright (C) 2018 Xamarin Inc., Microsoft. All rights reserved.<br><a target="_blank" href="http://university.xamarin.com">Visit Xamarin University for more classes and content</a></footer>
+
+</body>
+</html>

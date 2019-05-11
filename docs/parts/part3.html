@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+    <title>Exercise 3: Create a custom control</title>
+    <link rel="stylesheet" type="text/css" href="./res/styles/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./res/styles/prettify.css" />
+    <link rel="stylesheet" type="text/css" href="./res/styles/styles.css">
+</head>
+
+<body>
+    <!-- Use the same title as the StartHere -->
+    <header>XAM335 Mobile application architecture</header>
+
+    <section id="main">
+        <h2>Exercise 3: Create a custom control</h2>
+<p>In this exercise, you'll define a custom control to create a drawing surface that can be consumed in your shared code.</p>
+<blockquote class="info-quote">To complete the exercise, you will need <a href="https://www.visualstudio.com/" target="_blank">Visual Studio for Windows or macOS</a> with the <a href="https://visualstudio.microsoft.com/xamarin/" target="_blank">Xamarin development tools</a> installed. You will also need either an emulator/simulator or a device to run the exercise on. Please see the <a href="https://docs.microsoft.com/xamarin/cross-platform/get-started/installation/" target="_blank">setup page</a> if you need help installing the Xamarin development environment.
+</blockquote>
+
+<hr>
+<h2>Open the starter solution</h2>
+<p>Open the starter <strong>XFDraw</strong> solution from the <strong>Exercise 3</strong> &gt; <strong>Start</strong> folder in your copy of the cloned or downloaded <a href="https://github.com/XamarinUniversity/XAM335/">course materials</a> in either <strong>Visual Studio</strong> on Windows or <strong>Visual Studio for Mac</strong>.</p>
+<p>If you're using Visual Studio on Windows, you'll see all of the platform or head projects: iOS, Android and Windows. If you're using macOS, the Windows projects will be disabled (grayed out).</p>
+
+<hr>
+<h2>Create a custom element</h2>
+<ol>
+<li>
+In the <strong>XFDraw</strong> shared project, create a new class named <strong>SketchView</strong> that derives from <strong>View</strong>.
+</li>
+<li>
+Create a <code>BindableProperty</code> named <strong>InkColorProperty</strong>. Set the <strong>propertyName</strong> as &quot;InkColor&quot;, the return type as <code>Color</code> and the declaring type as the new element - <strong>SketchView</strong>.
+</li>
+<li>
+Create Color property named <strong>InkColor</strong> for the bindable property. Call the <code>GetValue</code> and <code>SetValue</code> methods, passing in <strong>InkColorProperty</strong>, in the getter/setter.
+</li>
+</ol>
+<pre class="prettyprint-collapse"><code>class SketchView : View
+{
+    public static readonly BindableProperty InkColorProperty = BindableProperty.Create(&quot;InkColor&quot;, typeof(Color), typeof(SketchView), Color.Blue);
+
+    public Color InkColor
+    {
+        get { return (Color)GetValue(InkColorProperty); }
+        set { SetValue(InkColorProperty, value); }
+    }
+}
+</code></pre>
+
+
+<hr>
+<h2>Consume the custom element</h2>
+<p>You'll add the custom element to your visual content page. However, you haven't yet added any platform-specific rendering code so the view will be blank.</p>
+<ol>
+<li>
+Open <strong>MainPage.xaml</strong> in the shared project.
+</li>
+<li>
+Add a SketchView to the <strong>mainLayout</strong> Grid. You can use the same xmlns you defined for the hyperlink label.
+</li>
+<li>
+Give it a name of <strong>sketchView</strong> so that you can reach the control in the code-behind.
+</li>
+<li>
+Set the <code>HorizontalOptions</code> and <code>VerticalOptions</code> to <code>FillAndExpand</code>.
+</li>
+<li>
+Set the <code>InkColor</code> property to a default color, the code below uses green.
+</li>
+</ol>
+<pre class="prettyprint-collapse"><code>&lt;local:SketchView x:Name=&quot;sketchView&quot; HorizontalOptions=&quot;FillAndExpand&quot; VerticalOptions=&quot;FillAndExpand&quot; InkColor=&quot;Green&quot; /&gt;
+</code></pre>
+
+
+<hr>
+<h2>Exercise summary</h2>
+<p>In this exercise, you created a custom element in Xamarin.Forms and added a bindable property to the element.</p>
+<p>You can view the completed solution in the <strong>Exercise 3</strong> &gt; <strong>Completed</strong> folder of your copy of the cloned or downloaded <a href="https://github.com/XamarinUniversity/XAM335/">course materials</a>.</p>
+
+
+        <div class="align-right">
+            <a href="../StartHere.html">Go Back</a>
+        </div>
+
+    </section>
+
+    <script src="./res/js/jquery.min.js"></script>
+    <script src="./res/js/jquery.imagemapster.min.js"></script>
+    <script src="./res/js/imagemap.js"></script>
+    <script src="./res/js/prettify.js"></script>
+    <script src="./res/js/script.js"></script>
+
+    <footer>Copyright (C) 2018 Xamarin Inc., Microsoft. All rights reserved.<br><a target="_blank" href="http://university.xamarin.com">Visit Xamarin University for more classes and content</a></footer>
+
+</body>
+</html>

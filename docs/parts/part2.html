@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+    <title>Exercise 2: Extend an existing renderer</title>
+    <link rel="stylesheet" type="text/css" href="./res/styles/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./res/styles/prettify.css" />
+    <link rel="stylesheet" type="text/css" href="./res/styles/styles.css">
+</head>
+
+<body>
+    <!-- Use the same title as the StartHere -->
+    <header>XAM335 Mobile application architecture</header>
+
+    <section id="main">
+        <h2>Exercise 2: Extend an existing renderer</h2>
+<p>In this exercise, you'll extend the provided label renderers to create a clickable &quot;hyperlink label&quot; that can launch the default browser when tapped.</p>
+<p>This exercise includes steps for all platforms supported by Xamarin.Forms. You're not required to complete the steps for every platform but it's recommend you run the exercises on at least two.</p>
+<figure class="figure">
+<img src="./images/ex2_complete.png" alt="Screenshot of the completed exercise." class="exercise portrait bordered" title="Completed exercise" />
+<figcaption class="figure-caption">Completed exercise</figcaption>
+</figure>
+<blockquote class="info-quote">To complete the exercise, you will need <a href="https://www.visualstudio.com/" target="_blank">Visual Studio for Windows or macOS</a> with the <a href="https://visualstudio.microsoft.com/xamarin/" target="_blank">Xamarin development tools</a> installed. You will also need either an emulator/simulator or a device to run the exercise on. Please see the <a href="https://docs.microsoft.com/xamarin/cross-platform/get-started/installation/" target="_blank">setup page</a> if you need help installing the Xamarin development environment.
+</blockquote>
+
+<hr>
+<h2>Open the starter solution</h2>
+<p>This exercise is a continuation of the previous exercise. You can use your existing solution or begin from the prior <strong>Exercise 1 &gt; Completed</strong> solution in your copy of the cloned or downloaded <a href="https://github.com/XamarinUniversity/XAM335/">course materials</a>.</p>
+<p>If you're using Visual Studio on Windows, you'll see all of the platform or head projects: iOS, Android and Windows. If you're using macOS, the Windows projects will be disabled (grayed out).</p>
+
+<hr>
+<h2>Create a derived element</h2>
+<p>You'll create a new element in your shared code that derives from Label. Later, when you create the renderers, you'll apply them to this element.</p>
+<ol>
+<li>
+In the <code>XFDraw</code> shared project, create a new class named <code>HyperlinkLabel</code>.
+</li>
+<li>
+Update the signature to derive from <code>Label</code>.
+</li>
+</ol>
+<pre class="prettyprint-collapse"><code>using Xamarin.Forms;
+
+namespace XFDraw
+{
+   class HyperlinkLabel : Label
+   {
+   }
+}
+</code></pre>
+
+
+<hr>
+<h2>Consume the custom element</h2>
+<ol>
+<li>
+Open <strong>MainPage.xaml</strong> in the <strong>XFDraw</strong> shared project.
+</li>
+<li>
+Add an xml namespace named <strong>local</strong> to reach the <strong>XFDraw</strong> namespace.
+</li>
+<li>
+Replace the existing <code>Label</code> with your new <code>HyperlinkLabel</code> and leave all existing properties as they are.
+</li>
+</ol>
+<pre class="prettyprint-collapse"><code>&lt;ContentPage ...
+   xmlns:local=&quot;clr-namespace:XFDraw&quot;&gt;
+   &lt;Grid x:Name=&quot;mainLayout&quot; Padding=&quot;10&quot;&gt;
+       &lt;local:HyperlinkLabel Text=&quot;university.xamarin.com&quot; HorizontalOptions=&quot;Center&quot; VerticalOptions=&quot;End&quot; /&gt;
+   &lt;/Grid&gt;
+&lt;/ContentPage&gt;
+</code></pre>
+
+
+<hr>
+<h2>Create the Android renderer</h2>
+<ol>
+<li>
+In the Android head-project, create a new class named <strong>HyperlinkLabelRenderer</strong> that derives from <code>LabelRenderer</code>.
+</li>
+<li>
+Add a constructor that takes an Android <code>Context</code> and passes the <code>Context</code> to the base constructor. This is required for Android renderers.
+</li>
+<li>
+Override <code>OnElementChanged</code>.
+</li>
+<li>
+The <code>Label</code> renderer creates an Android <code>TextView</code> which is reachable from the Control property. Call <code>Linkify.AddLinks</code> to update the native <code>TextView</code> to a clickable hyperlink control; set the match options to <strong>All</strong>.
+</li>
+<li>
+Add the <code>ExportRenderer</code> assembly attribute above the namespace declaration to connect the <code>HyperlinkLabelRenderer</code> to the <code>HyperlinkLabel</code> element you created earlier.
+</li>
+</ol>
+<pre class="prettyprint-collapse"><code>[assembly: ExportRenderer(typeof(HyperlinkLabel), typeof(HyperlinkLabelRenderer))]
+namespace XFDraw.Droid
+{
+   class HyperlinkLabelRenderer : LabelRenderer
+   {
+      public HyperlinkLabelRenderer(Context context) : base (context)
+      {
+      }
+
+      protected override void OnElementChanged(ElementChangedEventArgs&lt;Label&gt; e)
+      {
+         base.OnElementChanged(e);
+
+         Linkify.AddLinks(Control, MatchOptions.All);
+      }
+   }
+}
+</code></pre>
+
+
+<hr>
+<h2>Create the iOS renderer</h2>
+<ol>
+<li>
+In the iOS head-project, create a new class named <strong>HyperlinkLabelRenderer</strong> that derives from LabelRenderer.
+</li>
+<li>
+Override <code>OnElementChanged</code>.
+</li>
+<li>
+The Label renderer creates an iOS <code>UILabel</code> which is reachable from the Control property. Enable touch interaction on the native control by setting <code>UserInteractionEnabled</code> to true.
+</li>
+<li>
+Change the native control's text color to blue by setting the <code>TextColor</code> property.
+</li>
+<li>
+Create a <code>UITapGestureRecognizer</code>.
+</li>
+<li>
+<p>Set the recognizer's target using the <code>AddTarget</code> method and point it to either a new named method or a delegate.</p>
+<ul>
+<li>Create an <code>NSUrl</code> from <code>Control.Text</code>.</li>
+<li>Open the url <code>using UIApplication.SharedApplication.OpenUrl</code>.</li>
+</ul>
+</li>
+<li>
+Add the gesture to the native control via the renderer's <code>Control</code> property.
+</li>
+<li>
+Add the <code>ExportRenderer</code> assembly attribute above the namespace declaration to connect the <code>HyperlinkLabelRenderer</code> to the <code>HyperlinkLabel</code> element you created earlier.
+</li>
+</ol>
+<pre class="prettyprint-collapse"><code>[assembly: ExportRenderer(typeof(HyperlinkLabel), typeof(HyperlinkLabelRenderer))]
+namespace XFDraw.iOS
+{
+    class HyperlinkLabelRenderer : LabelRenderer
+    {
+        protected override void OnElementChanged(ElementChangedEventArgs&lt;Label&gt; e)
+        {
+            base.OnElementChanged(e);
+
+            Control.TextColor = UIColor.Blue;
+
+            Control.UserInteractionEnabled = true;
+
+            var gesture = new UITapGestureRecognizer();
+
+            gesture.AddTarget(() =&gt;
+            {
+                var url = new NSUrl(&quot;https://&quot; + Control.Text);
+
+                if (UIApplication.SharedApplication.CanOpenUrl(url))
+                    UIApplication.SharedApplication.OpenUrl(url);
+            });
+
+            Control.AddGestureRecognizer(gesture);
+        }
+    }
+}
+</code></pre>
+
+
+<hr>
+<h2>Create the Windows renderer</h2>
+<ol>
+<li>
+In the UWP head-project, create a new class named <strong>HyperlinkLabelRenderer</strong> that derives from <code>LabelRenderer</code>.
+</li>
+<li>
+Override <code>OnElementChanged</code>.
+</li>
+<li>
+The <code>Label</code> renderer creates a Windows <code>TextBlock</code> which is reachable from the <code>Control</code> property. Set its <code>Forground</code> property to a blue solid color brush.
+</li>
+<li>
+In <code>OnElementChanged</code>, subscribe to its <code>Tapped</code> event.
+</li>
+<li>
+In the handler, use <code>Launcher.LaunchUriAsync</code> to open a webpage. You'll need to create a well-formed <code>Uri</code>. This means inserting &quot;http://&quot; before the label's content. You can reach the Xamarin.Forms <code>Label</code> using the <code>Element</code> property.
+</li>
+<li>
+Add the <code>ExportRenderer</code> assembly attribute above the namespace declaration to connect the <code>HyperlinkLabelRenderer</code> to the <code>HyperlinkLabel</code> element you created earlier.
+</li>
+</ol>
+<pre class="prettyprint-collapse"><code>[assembly: ExportRenderer(typeof(HyperlinkLabel), typeof(HyperlinkLabelRenderer))]
+namespace XFDraw.UWP
+{
+    class HyperlinkLabelRenderer : LabelRenderer
+    {
+        protected override void OnElementChanged(ElementChangedEventArgs&lt;Label&gt; e)
+        {
+            base.OnElementChanged(e);
+
+            Control.Foreground = new SolidColorBrush(Colors.Blue);
+     
+            Control.Tapped += LabelTapped;
+        }
+
+        private async void LabelTapped(object sender, TappedRoutedEventArgs e)
+        {
+            var website = Element.Text;
+
+            if (website.IndexOf(&quot;http://&quot;) == -1)
+                website = &quot;http://&quot; + website;
+
+            await Launcher.LaunchUriAsync(new Uri(website));
+        }
+    }
+}
+</code></pre>
+
+
+<hr>
+<h2>Exercise summary</h2>
+<p>In this exercise, you extended a renderer to add new behavior to an existing Xamarin.Forms element.</p>
+<p>You can view the completed solution in the <strong>Exercise 2</strong> &gt; <strong>Completed</strong> folder of your copy of the cloned or downloaded <a href="https://github.com/XamarinUniversity/XAM335/">course materials</a>.</p>
+
+
+        <div class="align-right">
+            <a href="../StartHere.html">Go Back</a>
+        </div>
+
+    </section>
+
+    <script src="./res/js/jquery.min.js"></script>
+    <script src="./res/js/jquery.imagemapster.min.js"></script>
+    <script src="./res/js/imagemap.js"></script>
+    <script src="./res/js/prettify.js"></script>
+    <script src="./res/js/script.js"></script>
+
+    <footer>Copyright (C) 2018 Xamarin Inc., Microsoft. All rights reserved.<br><a target="_blank" href="http://university.xamarin.com">Visit Xamarin University for more classes and content</a></footer>
+
+</body>
+</html>
